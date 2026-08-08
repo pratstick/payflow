@@ -1,0 +1,56 @@
+openapi: 3.0.3
+info:
+  title: PayFlow API
+  version: 0.1.0
+servers:
+  - url: http://localhost:8080
+paths:
+  /v1/payments:
+    post:
+      summary: Create payment
+      parameters:
+        - in: header
+          name: Idempotency-Key
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [customer_id, amount, currency]
+              properties:
+                customer_id:
+                  type: string
+                amount:
+                  type: integer
+                  format: int64
+                currency:
+                  type: string
+      responses:
+        '201':
+          description: Payment created
+        '400':
+          description: Invalid request or missing idempotency key
+        '409':
+          description: Duplicate idempotency key
+        '500':
+          description: Internal server error
+  /v1/payments/{id}:
+    get:
+      summary: Get payment by ID
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Payment details
+        '404':
+          description: Payment not found
+        '500':
+          description: Internal server error
